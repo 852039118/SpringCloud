@@ -18,3 +18,15 @@ spring:
     username: root
     password: 123456
 
+#Eureka的配置,服务注册到哪里
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka/,http://localhost:7002/eureka/,http://localhost:7003/eureka/
+  instance:
+    instance-id: springcloud-provider-dept8001
+
+# info 配置
+info:
+  app.name: warren.springcloud
+  company.name: blogs.warren.run

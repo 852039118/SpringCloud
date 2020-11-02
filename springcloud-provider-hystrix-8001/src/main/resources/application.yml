@@ -30,3 +30,4 @@ eureka:
 info:
   app.name: warren.springcloud
   company.name: blogs.warren.run
+  auther.name: Wkj

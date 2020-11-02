@@ -28,7 +28,7 @@ public class DeptController {
         return dept;
     }
 
-    // 备选方法
+    // 备选方法(服务熔断)
     public Dept hystrixGet(@PathVariable("id") long id){
         return new Dept()
                 .setDeptno(id)

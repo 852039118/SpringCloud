@@ -1,0 +1,32 @@
+server:
+  port: 9527
+
+spring:
+  application:
+    name: springcloud-zuul
+
+#Eureka的配置,服务注册到哪里
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka/,http://localhost:7002/eureka/,http://localhost:7003/eureka/
+  instance:
+    instance-id: zuul9527.com
+    prefer-ip-address: true   # 显示真实的IP，而不是名称
+
+# Zuul配置
+
+info:
+  app.name: warren-springcloud
+  company.name: blog.warren.com
+
+zuul:
+  routes:
+    mydept.serviceId: springcloud-provider-dept
+    mydept.path: /mydept/**
+  # ignored-services: springcloud-provider-dept   # 不能再使用这个路径访问了
+  ignored-services: "*"   # 项目所有地址不能用名称访问了
+  prefix: /warren         # 设置公用的前缀，必须带
+
+
+

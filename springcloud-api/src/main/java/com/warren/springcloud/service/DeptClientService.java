@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Component
-@FeignClient(value = "SPRINGCLOUD-PROVIDER-DEPT")
+@FeignClient(value = "SPRINGCLOUD-PROVIDER-DEPT",fallbackFactory = DeptClientServiceFallbackFactory.class)
 public interface DeptClientService {
     @RequestMapping("/dept/add")
     public boolean add(@RequestBody Dept dept);
 
     @RequestMapping("/dept/get/{id}")   //为什么可以和Feign的地址不一致啊，使用的是Feign中Controller的地址
-    public Dept get(@PathVariable("id") long id);
+    public Dept queryById(@PathVariable("id") long id);
 
     @RequestMapping("/dept/list")
     public List<Dept> queryAll();

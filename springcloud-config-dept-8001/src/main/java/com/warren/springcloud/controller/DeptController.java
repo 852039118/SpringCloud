@@ -1,5 +1,6 @@
 package com.warren.springcloud.controller;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.warren.springcloud.pojo.Dept;
 import com.warren.springcloud.service.DeptService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,48 +18,22 @@ public class DeptController {
     @Autowired
     private DeptService deptService;
 
-    // 获取一些配置的信息，得到具体的微服务
-    @Autowired
-    private DiscoveryClient client;
-
-    @PostMapping("/dept/add")
-    public boolean addDept(@RequestBody Dept dept){
-        return deptService.addDept(dept);
-    }
-
-    @GetMapping("/dept/get/{id}")
-    public Dept queryById(@PathVariable("id") long id){
+    @RequestMapping("/dept/get/{id}")
+    @HystrixCommand(fallbackMethod = "hystrixGet")
+    public Dept get(@PathVariable("id") long id){
         Dept dept = deptService.queryById(id);
         if (dept == null){
-            throw new RuntimeException("fail");
+            throw new RuntimeException("id => " + id + "不存在该用户");
         }
         return dept;
     }
 
-    @GetMapping("/dept/list")
-    public List<Dept> queryAll(){
-        return deptService.queryAll();
+    // 备选方法(服务熔断)
+    public Dept hystrixGet(@PathVariable("id") long id){
+        return new Dept()
+                .setDeptno(id)
+                .setDname("id => " + id + "不存在该用户--@Hystrix")
+                .setDb_source("No this database in MySQL")
+                ;
     }
-
-    // 注册进来的微服务~ 获取一些信息~
-    @GetMapping("/dept/discovery")
-    public Object discovery(){
-        // 获取微服务列表的清单
-        List<String> services = client.getServices();
-        System.out.println("discovery=>services" + services);
-
-        // 得到一个具体的微服务信息，通过具体的微服务id，applicationName;
-        List<ServiceInstance> instances = client.getInstances("SPRINGCLOUD-PROVIDER-DEPT");
-        for (ServiceInstance instance : instances) {
-            System.out.println(
-                    instance.getServiceId() + "\t" +
-                    instance.getHost() + "\t" +
-                    instance.getInstanceId() + "\t" +
-                    instance.getScheme() + "\t" +
-                    instance.getUri()
-            );
-        }
-        return this.client;
-    }
-
 }
